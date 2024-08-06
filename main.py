@@ -57,29 +57,41 @@ def criptografar(event):
 #---------------------KAYKY CRESPO---------------------#
 
         #CRIPTOGRAFIA
-        msgCifrada = []
-        msgCifradaTemp = []
-        n,d,e,m = None,None,None,None
+        msgCifrada = [] # armazenará mensagem criptografada
+        msgCifradaTemp = [] # armazenará a mensagem convertida em bytes
+        n,d,e,m = None,None,None,None # variáveis globais
         
+        # Gera número primo até 300
         primos = sort_prime(300)
 
-        #dois números aleatórios dentro dos primos do range do número máximo de primos
-        #usando a função get randown do import
-        #- 60 para remover o 2 e 3, pois são 62 primos
-        p = primos[get_random_int(len(primos)-60,len(primos))]
-        q = primos[get_random_int(len(primos)-60,len(primos))]
 
-        # multiplicar os primos (N)
+        """ escolhemos 2 números aleatórios primos excluindo os primeiros 60 números primos
+            garantindo "p" e "q" sejam selecionados evitando os primeiros números primos
+            p = primos[get_random_int(len(primos)-60,len(primos))]
+            q = primos[get_random_int(len(primos)-60,len(primos))]
+        """
+
+        # multiplicar os primos gerando (N)
+        # "N" é usado para chave pública
         n = p*q
         
-        #Co-primo (M)
+        #Co-primo (M), função totiente de Euler de "N"
         m = (p-1)*(q-1)
         
-        #CHAVE PÚBLICA
-        # Escolher um número E em que 1 < E < M
-        # e seja co-primo de M
-        # e onde o MDC M,E = 1, sendo E > 1.
-        tempE = 0
+        
+        """
+        CHAVE PÚBLICA
+        
+            inicializa "tempE" e "temp" e "e"
+            
+            Encontrar um número "e" que seja coprimo com "m" e esteja dentro do intervalo desejado.
+            Escolher um número "E" em que 1 < "E" < "M" e seja co-primo de "M" onde o MDC "M","E" = 1, sendo "E" > 1
+        
+            Este loop procura um número "e" tal que o máximo divisor comum (MDC) entre "e" e "m" seja 1 garantindo que "e" e "m" sejam coprimos
+            Se o MDC não for 1, o loop continua gerando novos valores para temp até encontrar um valor adequado para "e"
+        """
+        
+        tempE = 0 
         temp=(get_random_int(1,m))
         e=0
         while(e==0) :
@@ -88,9 +100,11 @@ def criptografar(event):
             else : temp=(get_random_int(1,m))
         
         #CHAVE PRIVADA
+        
+        # inverso modular de "e" em relação a "m" = "d"
         d = modInverse(e,m)
         
-        #Transformou a mensagem de bytes para utf-8
+        #Transformou a mensagem de bytes para utf-8 armazenando na lista "msgCifradaTemp"
         strBytes = bytes(msg, 'utf-8')
         for byte in strBytes:
             msgCifradaTemp.append(byte)
@@ -104,6 +118,7 @@ def criptografar(event):
         # Novamente, dividimos o divisor anterior pelo resto:
         #13 : 3 = 4 com resto 1
 
+        # Para cada byte na mensagem, você calcula o valor criptografado elevando o byte à potência de "e" e, em seguida, aplicando o módulo "n". O resultado é armazenado em msgCifrada.
 
         #FUNÇÃO CRIPTOGRAFAR
         for index in range(len(msgCifradaTemp)):
@@ -112,12 +127,13 @@ def criptografar(event):
             msgCifrada.append(temp2)
             
         
-        #deixando o resultado da criptografia
-        criptografada.value = msgCifrada
+        #RESULTADO DA CRIPTOGRAFIA
+        
+        criptografada.value = msgCifrada # mensagem criptografada
 
-        chave_privada.value = n ,d
+        chave_privada.value = n ,d #CHAVE PRIVADA
             
-        chave_publica.value = n, p
+        chave_publica.value = n, p #CHAVE PÚBLICA
 
         mensagemTexto.placeholder = "Mensagem para encriptografar"    
 
