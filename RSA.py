@@ -1,6 +1,6 @@
 #importando para funcionar os cálculos matemáticos (números mínimos e maximos)
 import io
-import math 
+import math
 
 # importando para conseguir randomizar números (números aleatórios)
 import random
